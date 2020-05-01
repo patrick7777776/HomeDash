@@ -15,12 +15,10 @@ defmodule HomeDash.Component.Navigation do
 
     styles = opts[:styles] || %{}
 
-    # Get the viewport width
     {:ok, %ViewPort.Status{size: {width, _}}} =
       opts[:viewport]
       |> ViewPort.info()
 
-    # TODO: would be nicer to have custom icons rather than stupid <, >
     graph =
       Graph.build(styles: styles, font_size: 20)
       |> text(title, text_align: :center, font_size: 24, translate: {width / 2, 30}, fill: col_3())
@@ -37,17 +35,12 @@ defmodule HomeDash.Component.Navigation do
      push: graph}
   end
 
-  # --------------------------------------------------------
-  # blog: verify is applied to first arg passed to init!
-  # move after init!
   def verify({scene, title, all_scenes}) when is_atom(scene) and is_binary(title) do
     case Enum.member?(all_scenes, scene) do
       true -> {:ok, {scene, title}}
       false -> :invalid_data
     end
   end
-
-  # ----------------------------------------------------------------------------
 
   def filter_event({:click, :next_scene}, _, %{viewport: vp, next_scene: next_scene} = state) do
     ViewPort.set_root(vp, {next_scene, nil})
