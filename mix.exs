@@ -26,7 +26,7 @@ defmodule HomeDash.MixProject do
       {:scenic_driver_glfw, "~> 0.10", targets: :host},
       {:ex2ms, "~> 1.0"},
       {:timex, "~> 3.5"},
-      {:httpoison, "~> 1.6"},
+      {:httpoison, "~> 1.7"},
       {:jason, "~> 1.1"}
     ]
   end

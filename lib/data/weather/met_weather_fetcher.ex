@@ -50,7 +50,7 @@ defmodule HomeDash.Data.MetWeatherFetcher do
       ) do
     Logger.info("Fetching weather update")
 
-    {:ok, response} =
+    resp =
       HTTPoison.get(
         ~s"https://api-metoffice.apiconnect.ibmcloud.com/metoffice/production/v0/forecasts/point/hourly?excludeParameterMetadata=true&includeLocationName=false&latitude=#{
           lat
@@ -60,11 +60,9 @@ defmodule HomeDash.Data.MetWeatherFetcher do
         "x-ibm-client-secret": secret
       )
 
-    # needs status code checking, ...
-
-    met = response.body |> Jason.decode!()
-
-    with {:ok, [features | _]} <- Map.fetch(met, "features"),
+    with {:ok, response} <- resp,
+         met <- Jason.decode!(response.body),
+         {:ok, [features | _]} <- Map.fetch(met, "features"),
          {:ok, properties} <- Map.fetch(features, "properties"),
          {:ok, time_series} <- Map.fetch(properties, "timeSeries") do
       elems =

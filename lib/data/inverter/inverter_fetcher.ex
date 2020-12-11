@@ -36,12 +36,12 @@ defmodule HomeDash.Data.InverterFetcher do
             {:noreply, {host, pw, s}}
           else
             err ->
-              Logger.warn(inspect(err))
+              Logger.warn(~s"Inverter fetcher: #{inspect(err)} ; scheduling retry...")
               reschedule(tag, host, pw, s)
           end
         else
           err ->
-            Logger.warn(inspect(err))
+            Logger.warn(~s"Inverter fetcher: #{inspect(err)} ; scheduling retry...")
             reschedule(tag, host, pw, session)
         end
     end

@@ -40,8 +40,8 @@ defmodule HomeDash.Data.InverterHelper do
   end
 
   def today_so_far(session) do
-    with {:ok, [_, {_, yesterdays_total} | _]} = last_n_days_raw(session, 1),
-         {:ok, total} = QSB36.total_yield(session) do
+    with {:ok, [_, {_, yesterdays_total} | _]} <- last_n_days_raw(session, 1),
+         {:ok, total} <- QSB36.total_yield(session) do
       {:ok, total - yesterdays_total}
     else
       err -> err
