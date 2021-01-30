@@ -31,7 +31,8 @@ defmodule HomeDash.Data.MetWeatherFetcher do
       MetWeather.update_forecasts(hourly_forecasts)
       Process.send_after(self(), :fetch, @fetch_interval)
     else
-      _ ->
+      err ->
+        Logger.warn(~s"fetch :-( #{inspect(err)}")
         Process.send_after(self(), :fetch, @retry_fetch_delay)
     end
 

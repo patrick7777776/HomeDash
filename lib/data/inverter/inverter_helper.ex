@@ -73,8 +73,8 @@ defmodule HomeDash.Data.InverterHelper do
       |> Timex.to_unix()
 
 
-    with {:ok, [_, {_, yesterdays_total} | _]} = last_n_days_raw(session, 1),
-         {:ok, vals} = QSB36.yield_5min(session, s, e) do
+    with {:ok, [_, {_, yesterdays_total} | _]} <- last_n_days_raw(session, 1),
+         {:ok, vals} <- QSB36.yield_5min(session, s, e) do
       # TODO: drop anything that is before 0am in our timezone
       vals = Enum.drop_while(vals, fn {ts, _} -> ts < begin end)
 

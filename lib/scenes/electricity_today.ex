@@ -107,8 +107,25 @@ defmodule HomeDash.Scene.ElectricityToday do
 
   def handle_info(:update, graph) do
     # solar output
-    current_kW = :io_lib.format("~.2f", [(Inverter.get(:current_watts) || 0) / 1000])
-    todays_kWh = :io_lib.format("~.2f", [(Inverter.get(:watts_today) || 0) / 1000])
+    c_watts = 
+      case Inverter.get(:current_watts) do
+        w when is_integer(w) and w >= 0 -> w
+        other ->
+          IO.inspect(other, label: "non-numerical current watts ?!?!?!")
+          -1
+      end
+
+    t_watts = 
+      case Inverter.get(:watts_today) do
+        w when is_integer(w) and w >= 0 -> w
+        other ->
+          IO.inspect(other, label: "non-numerical watts today ?!?!?!")
+          -1
+      end
+
+    current_kW = :io_lib.format("~.2f", [c_watts / 1000.0])
+    todays_kWh = :io_lib.format("~.2f", [t_watts / 1000.0])
+    # TODO: eliminate duplication above
 
     graph =
       graph

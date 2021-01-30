@@ -4,7 +4,7 @@ defmodule HomeDash.Data.InverterFetcher do
   alias HomeDash.Data.Inverter
   alias HomeDash.Data.InverterHelper
 
-  @cool_off 5 * 1000
+  @cool_off 2 * 60 * 1000
   @tasks %{
     device_info: {&QSB36.device_info/1, 60 * 60 * 1000},
     health_status: {&QSB36.health_status/1, 2 * 60 * 1000},
@@ -35,13 +35,19 @@ defmodule HomeDash.Data.InverterFetcher do
             schedule(tag, interval)
             {:noreply, {host, pw, s}}
           else
+            {:error, %HTTPoison.Error{reason: :checkout_timeout}} ->
+              Logger.warn("the dreaded checkout timeout happened; terminating...")
+              {:stop, :dreaded_checkout_timeout, {host, pw, nil}}
             err ->
-              Logger.warn(~s"Inverter fetcher: #{inspect(err)} ; scheduling retry...")
+              Logger.warn(~s"Inverter fetcher, trying to log in: #{inspect(err)} for #{tag}; scheduling retry...")
               reschedule(tag, host, pw, s)
           end
         else
+            {:error, %HTTPoison.Error{reason: :checkout_timeout}} ->
+              Logger.warn("...the dreaded checkout timeout happened; terminating...")
+              {:stop, :dreaded_checkout_timeout, {host, pw, nil}}
           err ->
-            Logger.warn(~s"Inverter fetcher: #{inspect(err)} ; scheduling retry...")
+            Logger.warn(~s"Inverter fetcher: #{inspect(err)} for #{tag}; scheduling retry...")
             reschedule(tag, host, pw, session)
         end
     end
